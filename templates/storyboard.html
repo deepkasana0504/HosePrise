@@ -206,18 +206,17 @@
                         modeBarButtonsToRemove: ['lasso2d','select2d'],
                         displaylogo: false};
 
-    function renderPlotly(divId, chartJson) {
-        const data = JSON.parse(chartJson);
-        Plotly.newPlot(divId, data.data, data.layout, plotConfig);
+    function renderPlotly(divId, chartData) {
+        Plotly.newPlot(divId, chartData.data, chartData.layout, plotConfig);
     }
 
     // Render once all slides exist (hidden divs need explicit sizing)
-    renderPlotly('story-overview', '{{ overview_chart | safe }}');
-    renderPlotly('story-renovation', '{{ renovation_hist | safe }}');
-    renderPlotly('story-pie', '{{ age_pie | safe }}');
-    renderPlotly('story-box', '{{ box_chart | safe }}');
-    renderPlotly('story-features', '{{ age_bedrooms | safe }}');
-    renderPlotly('story-scatter', '{{ scatter_chart | safe }}');
+    renderPlotly('story-overview', {{ overview_chart | safe }});
+    renderPlotly('story-renovation', {{ renovation_hist | safe }});
+    renderPlotly('story-pie', {{ age_pie | safe }});
+    renderPlotly('story-box', {{ box_chart | safe }});
+    renderPlotly('story-features', {{ age_bedrooms | safe }});
+    renderPlotly('story-scatter', {{ scatter_chart | safe }});
 
     // ── Slide navigation ───────────────────────────────────────────
     let currentSlide = 0;

@@ -174,18 +174,17 @@
                         modeBarButtonsToRemove: ['lasso2d','select2d'],
                         displaylogo: false};
 
-    function renderPlotly(divId, chartJson) {
-        const data = JSON.parse(chartJson);
-        Plotly.newPlot(divId, data.data, data.layout, plotConfig);
+    function renderPlotly(divId, chartData) {
+        Plotly.newPlot(divId, chartData.data, chartData.layout, plotConfig);
     }
 
     // Initial renders
-    renderPlotly('overview-chart', '{{ overview_chart | safe }}');
-    renderPlotly('renovation-hist', '{{ renovation_hist | safe }}');
-    renderPlotly('age-pie', '{{ age_pie | safe }}');
-    renderPlotly('box-chart', '{{ box_chart | safe }}');
-    renderPlotly('age-feature', '{{ age_bedrooms | safe }}');
-    renderPlotly('scatter-chart', '{{ scatter_chart | safe }}');
+    renderPlotly('overview-chart', {{ overview_chart | safe }});
+    renderPlotly('renovation-hist', {{ renovation_hist | safe }});
+    renderPlotly('age-pie', {{ age_pie | safe }});
+    renderPlotly('box-chart', {{ box_chart | safe }});
+    renderPlotly('age-feature', {{ age_bedrooms | safe }});
+    renderPlotly('scatter-chart', {{ scatter_chart | safe }});
 
     // ── Filter functions (fetch from API) ──────────────────────────
     async function filterRenovationHist() {
