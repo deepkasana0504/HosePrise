@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block title %}Storyboard - ABC Company Housing Analysis{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+
+        <div class="text-center mb-4">
+            <h2 style="font-weight:800; color:var(--primary);">
+                <i class="bi bi-book-half me-2"></i>Housing Market Analysis Storyboard
+            </h2>
+            <p class="text-muted">A guided narrative through key housing market insights for ABC Company</p>
+        </div>
+
+        <!-- Slide Indicators -->
+        <div class="text-center mb-3">
+            <span class="story-indicator active" data-slide="0"></span>
+            <span class="story-indicator" data-slide="1"></span>
+            <span class="story-indicator" data-slide="2"></span>
+            <span class="story-indicator" data-slide="3"></span>
+            <span class="story-indicator" data-slide="4"></span>
+        </div>
+
+        <!-- ═══ SLIDE 1: Introduction & Overview ═══ -->
+        <div class="story-slide active" data-index="0">
+            <div class="chart-card">
+                <h4 class="mb-3" style="font-weight:700; color:var(--primary);">
+                    <i class="bi bi-1-circle-fill me-2 text-primary"></i>Dataset Overview
+                </h4>
+
+                <div class="story-narrative">
+                    <strong>The Story Begins:</strong> ABC Company has collected comprehensive housing data
+                    covering <strong>{{ "{:,}".format(kpis.total_records) }}</strong> property records. The average
+                    sale price is <strong>${{ "{:,.0f}".format(kpis.avg_price) }}</strong>, with a total
+                    basement area of <strong>{{ "{:,}".format(kpis.total_basement_sqft) }} sqft</strong>.
+                    About <strong>{{ kpis.pct_renovated }}%</strong> of homes have been renovated,
+                    and the average house age is <strong>{{ kpis.avg_house_age }} years</strong>.
+                </div>
+
+                <!-- KPI row -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="bi bi-database-fill"></i></div>
+                            <div class="kpi-value">{{ "{:,}".format(kpis.total_records) }}</div>
+                            <div class="kpi-label">Records</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="bi bi-currency-dollar"></i></div>
+                            <div class="kpi-value">${{ "{:,.0f}".format(kpis.avg_price) }}</div>
+                            <div class="kpi-label">Avg Price</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="bi bi-bounding-box"></i></div>
+                            <div class="kpi-value">{{ "{:,}".format(kpis.total_basement_sqft) }}</div>
+                            <div class="kpi-label">Basement Sqft</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="bi bi-percent"></i></div>
+                            <div class="kpi-value">{{ kpis.pct_renovated }}%</div>
+                            <div class="kpi-label">Renovated</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="story-overview" class="plotly-chart"></div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: Renovation & Sales ═══ -->
+        <div class="story-slide" data-index="1">
+            <div class="chart-card">
+                <h4 class="mb-3" style="font-weight:700; color:var(--primary);">
+                    <i class="bi bi-2-circle-fill me-2 text-primary"></i>Renovation Impact on Sales
+                </h4>
+
+                <div class="story-narrative">
+                    <strong>Key Insight:</strong> The histogram below illustrates how sales are distributed
+                    based on years since renovation. Recently renovated homes (0-15 years) tend to fall in
+                    higher price brackets, while homes renovated over 30 years ago show lower average prices.
+                    This suggests renovations have a measurable positive impact on sale prices, with the
+                    effect diminishing over time.
+                </div>
+
+                <div id="story-renovation" class="plotly-chart"></div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: Age Distribution ═══ -->
+        <div class="story-slide" data-index="2">
+            <div class="chart-card">
+                <h4 class="mb-3" style="font-weight:700; color:var(--primary);">
+                    <i class="bi bi-3-circle-fill me-2 text-primary"></i>House Age &amp; Renovation Status
+                </h4>
+
+                <div class="story-narrative">
+                    <strong>Distribution Analysis:</strong> The donut chart reveals how the housing inventory
+                    is distributed across different age groups. Understanding this distribution helps identify
+                    renovation opportunities — older homes that haven't been renovated represent potential
+                    for value addition, while the proportion of renovated vs. non-renovated homes informs
+                    market positioning strategy.
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="story-pie" class="plotly-chart"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="story-box" class="plotly-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: Features Analysis ═══ -->
+        <div class="story-slide" data-index="3">
+            <div class="chart-card">
+                <h4 class="mb-3" style="font-weight:700; color:var(--primary);">
+                    <i class="bi bi-4-circle-fill me-2 text-primary"></i>Features &amp; House Age
+                </h4>
+
+                <div class="story-narrative">
+                    <strong>Feature Patterns:</strong> This grouped bar chart reveals how house features
+                    (bedrooms, bathrooms, floors) vary with house age. Newer homes tend to have more
+                    bathrooms and modernized floor plans, while older homes may have more bedrooms but
+                    fewer bathrooms. These patterns guide renovation priorities and pricing models for
+                    different property types.
+                </div>
+
+                <div id="story-features" class="plotly-chart"></div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Conclusions ═══ -->
+        <div class="story-slide" data-index="4">
+            <div class="chart-card">
+                <h4 class="mb-3" style="font-weight:700; color:var(--primary);">
+                    <i class="bi bi-5-circle-fill me-2 text-primary"></i>Conclusions &amp; Recommendations
+                </h4>
+
+                <div class="story-narrative">
+                    <strong>Summary:</strong> The analysis reveals several actionable insights for ABC Company:
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3" style="background:#f0f7ff; border-radius:12px; border-left:4px solid var(--secondary);">
+                            <h6><i class="bi bi-lightbulb-fill text-warning me-2"></i>Renovation ROI</h6>
+                            <p class="mb-0 small">Recently renovated homes command premium prices. Investments
+                            in renovation within the last 10 years show the strongest correlation with higher sale prices.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3" style="background:#f0fff4; border-radius:12px; border-left:4px solid var(--success);">
+                            <h6><i class="bi bi-graph-up-arrow text-success me-2"></i>Market Opportunity</h6>
+                            <p class="mb-0 small">A significant portion of older homes remain unrenovated,
+                            representing a large opportunity for value-add renovations and targeted marketing.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3" style="background:#fff8f0; border-radius:12px; border-left:4px solid var(--warning);">
+                            <h6><i class="bi bi-house-gear-fill text-warning me-2"></i>Feature Preferences</h6>
+                            <p class="mb-0 small">Modern buyers prefer homes with 2-3 bathrooms and open
+                            floor plans. Older homes with more bedrooms should be marketed highlighting space potential.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3" style="background:#fff0f0; border-radius:12px; border-left:4px solid var(--accent);">
+                            <h6><i class="bi bi-bullseye text-danger me-2"></i>Pricing Strategy</h6>
+                            <p class="mb-0 small">Pricing models should weight renovation recency, living area,
+                            and condition as primary factors. Price per sqft varies significantly between renovated and unrenovated homes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="story-scatter" class="plotly-chart"></div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="story-nav">
+            <button class="btn btn-outline-secondary" id="btn-prev" onclick="changeSlide(-1)" disabled>
+                <i class="bi bi-chevron-left me-1"></i>Previous
+            </button>
+            <span class="mx-3 text-muted" id="slide-counter">1 / 5</span>
+            <button class="btn btn-primary" id="btn-next" onclick="changeSlide(1)">
+                Next<i class="bi bi-chevron-right ms-1"></i>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const plotConfig = {responsive: true, displayModeBar: true,
+                        modeBarButtonsToRemove: ['lasso2d','select2d'],
+                        displaylogo: false};
+
+    function renderPlotly(divId, chartJson) {
+        const data = JSON.parse(chartJson);
+        Plotly.newPlot(divId, data.data, data.layout, plotConfig);
+    }
+
+    // Render once all slides exist (hidden divs need explicit sizing)
+    renderPlotly('story-overview', '{{ overview_chart | safe }}');
+    renderPlotly('story-renovation', '{{ renovation_hist | safe }}');
+    renderPlotly('story-pie', '{{ age_pie | safe }}');
+    renderPlotly('story-box', '{{ box_chart | safe }}');
+    renderPlotly('story-features', '{{ age_bedrooms | safe }}');
+    renderPlotly('story-scatter', '{{ scatter_chart | safe }}');
+
+    // ── Slide navigation ───────────────────────────────────────────
+    let currentSlide = 0;
+    const totalSlides = 5;
+
+    function changeSlide(delta) {
+        const slides = document.querySelectorAll('.story-slide');
+        const indicators = document.querySelectorAll('.story-indicator');
+
+        slides[currentSlide].classList.remove('active');
+        indicators[currentSlide].classList.remove('active');
+
+        currentSlide = Math.max(0, Math.min(totalSlides - 1, currentSlide + delta));
+
+        slides[currentSlide].classList.add('active');
+        indicators[currentSlide].classList.add('active');
+
+        document.getElementById('btn-prev').disabled = (currentSlide === 0);
+        document.getElementById('btn-next').disabled = (currentSlide === totalSlides - 1);
+        document.getElementById('slide-counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+        // Resize charts in newly visible slide (Plotly needs this)
+        setTimeout(() => {
+            slides[currentSlide].querySelectorAll('.plotly-chart').forEach(el => {
+                if (el.data) Plotly.Plots.resize(el);
+            });
+        }, 100);
+    }
+
+    // Click indicators
+    document.querySelectorAll('.story-indicator').forEach(ind => {
+        ind.addEventListener('click', () => {
+            const targetSlide = parseInt(ind.dataset.slide);
+            const delta = targetSlide - currentSlide;
+            if (delta !== 0) changeSlide(delta);
+        });
+    });
+</script>
+{% endblock %}

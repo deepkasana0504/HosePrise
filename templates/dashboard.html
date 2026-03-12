@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - ABC Company Housing Analysis{% endblock %}
+
+{% block content %}
+
+<!-- ═══ SCENARIO 1: Overall Data Overview ═══ -->
+<div class="section-title"><i class="bi bi-speedometer2 me-2"></i>Scenario 1: Overall Data Overview</div>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-xl">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="bi bi-database-fill"></i></div>
+            <div class="kpi-value">{{ "{:,}".format(kpis.total_records) }}</div>
+            <div class="kpi-label">Total Records</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="bi bi-currency-dollar"></i></div>
+            <div class="kpi-value">${{ "{:,.0f}".format(kpis.avg_price) }}</div>
+            <div class="kpi-label">Avg Sale Price</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="bi bi-bounding-box"></i></div>
+            <div class="kpi-value">{{ "{:,}".format(kpis.total_basement_sqft) }}</div>
+            <div class="kpi-label">Total Basement Sqft</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="bi bi-percent"></i></div>
+            <div class="kpi-value">{{ kpis.pct_renovated }}%</div>
+            <div class="kpi-label">Renovated</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="bi bi-calendar3"></i></div>
+            <div class="kpi-value">{{ kpis.avg_house_age }} yrs</div>
+            <div class="kpi-label">Avg House Age</div>
+        </div>
+    </div>
+</div>
+
+<!-- Overview chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h5 class="chart-title">Price Distribution Overview</h5>
+                <span class="chart-subtitle">Histogram of all sale prices</span>
+            </div>
+            <div id="overview-chart" class="plotly-chart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SCENARIO 2: Total Sales by Years Since Renovation ═══ -->
+<div class="section-title"><i class="bi bi-bar-chart-fill me-2"></i>Scenario 2: Total Sales by Years Since Renovation</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <div class="row align-items-center g-2">
+        <div class="col-auto">
+            <label><i class="bi bi-funnel-fill me-1"></i>Filter by Price Range:</label>
+        </div>
+        <div class="col-auto">
+            <select id="price-bin-filter" class="form-select form-select-sm" onchange="filterRenovationHist()">
+                {% for bin in price_bins %}
+                <option value="{{ bin }}">{{ bin }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h5 class="chart-title">Sales Distribution by Years Since Renovation</h5>
+                <span class="chart-subtitle">Stacked histogram – coloured by price range</span>
+            </div>
+            <div id="renovation-hist" class="plotly-chart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SCENARIO 3: Distribution of House Age by Renovation Status ═══ -->
+<div class="section-title"><i class="bi bi-pie-chart-fill me-2"></i>Scenario 3: Distribution of House Age by Renovation Status</div>
+
+<div class="filter-bar">
+    <div class="row align-items-center g-2">
+        <div class="col-auto">
+            <label><i class="bi bi-funnel-fill me-1"></i>Renovation Status:</label>
+        </div>
+        <div class="col-auto">
+            <select id="renovation-filter" class="form-select form-select-sm" onchange="filterAgePie()">
+                {% for opt in renovation_options %}
+                <option value="{{ opt }}">{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h5 class="chart-title">House Age Distribution (Pie)</h5>
+                <span class="chart-subtitle">Donut chart by age group</span>
+            </div>
+            <div id="age-pie" class="plotly-chart"></div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h5 class="chart-title">Price: Renovated vs Not Renovated</h5>
+                <span class="chart-subtitle">Box plot comparison</span>
+            </div>
+            <div id="box-chart" class="plotly-chart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SCENARIO 4: House Age Distribution by Features ═══ -->
+<div class="section-title"><i class="bi bi-bar-chart-steps me-2"></i>Scenario 4: House Age Distribution by Bathrooms, Bedrooms &amp; Floors</div>
+
+<div class="filter-bar">
+    <div class="row align-items-center g-2">
+        <div class="col-auto">
+            <label><i class="bi bi-funnel-fill me-1"></i>Feature:</label>
+        </div>
+        <div class="col-auto">
+            <select id="feature-filter" class="form-select form-select-sm" onchange="filterAgeFeature()">
+                <option value="bedrooms" selected>Bedrooms</option>
+                <option value="bathrooms">Bathrooms</option>
+                <option value="floors">Floors</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h5 class="chart-title" id="feature-chart-title">House Age by Bedrooms</h5>
+                <span class="chart-subtitle">Grouped bar chart</span>
+            </div>
+            <div id="age-feature" class="plotly-chart"></div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h5 class="chart-title">Price vs Living Area</h5>
+                <span class="chart-subtitle">Scatter – coloured by condition</span>
+            </div>
+            <div id="scatter-chart" class="plotly-chart"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // ── Render initial charts ───────────────────────────────────────
+    const plotConfig = {responsive: true, displayModeBar: true,
+                        modeBarButtonsToRemove: ['lasso2d','select2d'],
+                        displaylogo: false};
+
+    function renderPlotly(divId, chartJson) {
+        const data = JSON.parse(chartJson);
+        Plotly.newPlot(divId, data.data, data.layout, plotConfig);
+    }
+
+    // Initial renders
+    renderPlotly('overview-chart', '{{ overview_chart | safe }}');
+    renderPlotly('renovation-hist', '{{ renovation_hist | safe }}');
+    renderPlotly('age-pie', '{{ age_pie | safe }}');
+    renderPlotly('box-chart', '{{ box_chart | safe }}');
+    renderPlotly('age-feature', '{{ age_bedrooms | safe }}');
+    renderPlotly('scatter-chart', '{{ scatter_chart | safe }}');
+
+    // ── Filter functions (fetch from API) ──────────────────────────
+    async function filterRenovationHist() {
+        const val = document.getElementById('price-bin-filter').value;
+        const resp = await fetch(`/api/filter/renovation_hist?price_bin=${encodeURIComponent(val)}`);
+        const json = await resp.json();
+        Plotly.react('renovation-hist', json.chart.data, json.chart.layout, plotConfig);
+    }
+
+    async function filterAgePie() {
+        const val = document.getElementById('renovation-filter').value;
+        const resp = await fetch(`/api/filter/age_pie?renovation=${encodeURIComponent(val)}`);
+        const json = await resp.json();
+        Plotly.react('age-pie', json.chart.data, json.chart.layout, plotConfig);
+    }
+
+    async function filterAgeFeature() {
+        const val = document.getElementById('feature-filter').value;
+        const titleMap = {bedrooms: 'Bedrooms', bathrooms: 'Bathrooms', floors: 'Floors'};
+        document.getElementById('feature-chart-title').textContent = `House Age by ${titleMap[val]}`;
+        const resp = await fetch(`/api/filter/age_features?feature=${val}`);
+        const json = await resp.json();
+        Plotly.react('age-feature', json.chart.data, json.chart.layout, plotConfig);
+    }
+
+    // ── Responsive resize ──────────────────────────────────────────
+    window.addEventListener('resize', () => {
+        document.querySelectorAll('.plotly-chart').forEach(el => {
+            if (el.data) Plotly.Plots.resize(el);
+        });
+    });
+</script>
+{% endblock %}
